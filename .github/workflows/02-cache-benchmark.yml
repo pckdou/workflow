@@ -1,0 +1,25 @@
+name: 02-cache-benchmark
+
+on:
+  workflow_dispatch:
+    inputs:
+      use-cache:
+        description: Use npm cache
+        type: boolean
+        default: true
+
+jobs:
+  bench:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-node-deps
+        with:
+          node-version: '20'
+          working-directory: frontend
+          use-cache: ${{ github.event.inputs.use-cache }}
+      - uses: ./.github/actions/setup-node-deps
+        with:
+          node-version: '20'
+          working-directory: backend
+          use-cache: ${{ github.event.inputs.use-cache }}
