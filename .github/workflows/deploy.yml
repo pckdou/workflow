@@ -1,0 +1,45 @@
+name: Selective Deploy
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+jobs:
+  changes:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
+    outputs:
+      frontend: ${{ steps.filter.outputs.frontend }}
+      backend: ${{ steps.filter.outputs.backend }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            frontend:
+              - 'frontend/**'
+            backend:
+              - 'backend/**'
+
+  deploy-frontend:
+    needs: changes
+    if: needs.changes.outputs.frontend == 'true' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    environment: ${{ github.ref == 'refs/heads/main' && 'production' || 'staging' }}
+    steps:
+      - uses: actions/checkout@v4
+      - run: echo "Deploying FRONTEND to ${{ github.ref_name }}"
+
+  deploy-backend:
+    needs: changes
+    if: needs.changes.outputs.backend == 'true' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    environment: ${{ github.ref == 'refs/heads/main' && 'production' || 'staging' }}
+    steps:
+      - uses: actions/checkout@v4
+      - run: echo "Deploying BACKEND to ${{ github.ref_name }}"
