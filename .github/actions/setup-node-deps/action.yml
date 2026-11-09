@@ -1,0 +1,26 @@
+name: Setup Node and install deps
+description: Node 설치 + (선택적 캐시) + npm ci
+
+inputs:
+  node-version:
+    description: Node version
+    default: '20'
+  working-directory:
+    description: package.json 위치
+    required: true
+  use-cache:
+    description: npm 캐시 사용 여부 (측정용 토글)
+    default: 'true'
+
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-node@v4
+      with:
+        node-version: ${{ inputs.node-version }}
+        cache: ${{ inputs.use-cache == 'true' && 'npm' || '' }}
+        cache-dependency-path: ${{ inputs.working-directory }}/package-lock.json
+
+    - run: npm ci
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
