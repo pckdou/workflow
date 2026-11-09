@@ -1,0 +1,34 @@
+name: Reusable test
+
+on:
+  workflow_call:
+    inputs:
+      working-directory:
+        required: true
+        type: string
+      use-cache:
+        type: boolean
+        default: true
+
+jobs:
+  test:
+    name: ${{ inputs.working-directory }} / node ${{ matrix.node }} / ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        node: ['18', '20', '22']
+        exclude:
+          - os: windows-latest
+            node: '18'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-node-deps
+        with:
+          node-version: ${{ matrix.node }}
+          working-directory: ${{ inputs.working-directory }}
+          use-cache: ${{ inputs.use-cache }}
+      - run: npm test
+        shell: bash
+        working-directory: ${{ inputs.working-directory }}
