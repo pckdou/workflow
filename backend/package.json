@@ -1,0 +1,7 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "scripts": { "test": "jest" },
+  "dependencies": { "express": "^4.21.0", "cors": "^2.8.5" },
+  "devDependencies": { "jest": "^29.7.0", "eslint": "^8.57.0", "nodemon": "^3.1.7" }
+}
