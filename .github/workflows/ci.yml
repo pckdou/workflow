@@ -1,0 +1,27 @@
+name: CI (after)
+
+on:
+  push:
+    branches: [main]
+    paths-ignore: ['**.md', 'docs/**']
+  pull_request:
+    paths-ignore: ['**.md', 'docs/**']
+  workflow_dispatch:
+    inputs:
+      use-cache:
+        description: 캐시 사용 여부
+        type: boolean
+        default: true
+
+jobs:
+  frontend:
+    uses: ./.github/workflows/_reusable-test.yml
+    with:
+      working-directory: frontend
+      use-cache: ${{ github.event.inputs.use-cache != 'false' }}
+
+  backend:
+    uses: ./.github/workflows/_reusable-test.yml
+    with:
+      working-directory: backend
+      use-cache: ${{ github.event.inputs.use-cache != 'false' }}
